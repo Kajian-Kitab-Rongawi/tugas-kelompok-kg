@@ -194,11 +194,13 @@ Pola yang wajib ada di `sample.ttl`:
 6. `pytest tests/ontology -v` lulus seluruhnya tanpa Fuseki, tanpa jaringan, dan tanpa reasoner.
 7. `docs/ontology.md` memuat tabel CQ → istilah dan konvensi pemodelan yang konsisten dengan `hr.ttl`.
 
-## Open Questions
+## Keputusan (disetujui 2026-11-18)
 
-1. **Namespace.** `https://example.org/hr#` adalah placeholder. Ganti dengan namespace organisasi, atau cukup placeholder untuk proyek ini?
-2. **Kelas `Position` (baru).** Kelas ini tidak ada di daftar entitas brief, tetapi dibutuhkan oleh definisi sementara CQ5 (`isKeyPosition`, `requiresSkill`). Apakah disetujui? Jika definisi CQ5 berubah oleh HR, kelas ini bisa berubah.
-3. **`OrgUnit` dan `belongsTo` tidak dibutuhkan CQ mana pun.** Keduanya dipertahankan karena brief menyebutnya sebagai entitas inti dan peta sudah disetujui, serta dataset Kaggle hampir pasti memuat departemen. Pilihan: pertahankan (default) atau hapus sampai ada CQ yang memerlukannya.
-4. **`WORKED_AT` sebagai jalur, bukan edge langsung.** Konvensi 1 mengikuti reifikasi. Alternatifnya, `data-pipeline` menambahkan edge pintasan, dengan biaya redundansi data. Disetujui sebagai jalur saja?
-5. **"Lama pengalaman" diturunkan.** Brief menyebutnya sebagai atribut. Spec ini menghitungnya di query dan tidak menyimpannya. Disetujui?
-6. **Definisi CQ5 (menunggu HR).** Tidak menghambat modul ini. Dampaknya hanya pada `Position`, `isManagerial`, dan `hasLead`, dan baru relevan penuh di `SPEC-queries.md`.
+| # | Pertanyaan | Keputusan |
+|---|---|---|
+| 1 | Namespace | Placeholder `https://example.org/hr#` dipertahankan. Bila organisasi menetapkan namespace, ganti sekali dengan search-replace. |
+| 2 | Kelas `Position` | Disetujui, berstatus sementara karena bergantung pada definisi CQ5. |
+| 3 | `OrgUnit` / `belongsTo` | Dipertahankan walau tidak dipakai CQ mana pun: peta sudah disetujui dan dataset sumber hampir pasti memuat departemen. Kolom CQ-nya tetap "—". |
+| 4 | `WORKED_AT` | Jalur `hr:hasEmployment/hr:atCompany` saja, tanpa edge pintasan. |
+| 5 | Lama pengalaman | Diturunkan di query. Tidak ada triple durasi. |
+| 6 | Definisi CQ5 | Tidak menghambat modul ini. Finalisasi ditunda ke `SPEC-queries.md`, dampaknya hanya pada `Position`, `isManagerial`, dan `hasLead`. |
