@@ -35,6 +35,7 @@ There are no build, lint, or server steps in the `ontology` module.
 - Never commit real HR data, PII, or the Kaggle dataset.
 - Do not add a dependency without approval (see `Boundaries` in the spec).
 - Change the spec first when a decision changes, then the code.
+- Credit generative AI in any spec, plan, or design it helped shape (`docs/ai-usage-policy.md`).
 
 ## Workflow (agent-skills)
 
