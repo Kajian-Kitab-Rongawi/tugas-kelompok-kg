@@ -1,6 +1,6 @@
 # Spec: ontology
 
-Module id: `ontology` (lihat `CAPABILITY-MAP.md`). Tidak bergantung pada modul lain.
+Module id: `ontology` (lihat `specs/CAPABILITY-MAP.md`). Tidak bergantung pada modul lain.
 
 ## Objective
 
@@ -97,8 +97,9 @@ Tidak ada langkah build, linter, atau server di modul ini.
 Hanya baris bertanda ★ yang dibuat oleh modul ini.
 
 ```
-CAPABILITY-MAP.md          → Peta kapabilitas (indeks spec)
-SPEC-ontology.md        ★  → Dokumen ini
+specs/
+  CAPABILITY-MAP.md        → Peta kapabilitas (indeks spec)
+  SPEC-ontology.md      ★  → Dokumen ini
 requirements.txt        ★  → rdflib, pytest
 ontology/
   hr.ttl                ★  → Skema (satu-satunya sumber kebenaran skema)

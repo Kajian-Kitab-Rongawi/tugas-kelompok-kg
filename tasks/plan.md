@@ -1,6 +1,6 @@
 # Plan: ontology
 
-Spec: `SPEC-ontology.md` (disetujui 2026-11-18). Peta: `CAPABILITY-MAP.md`.
+Spec: `specs/SPEC-ontology.md` (disetujui 2026-11-18). Peta: `specs/CAPABILITY-MAP.md`.
 Scope: 8 file baru di modul `ontology`. Tanpa Fuseki dan tanpa jaringan saat test.
 
 ## Kondisi awal
@@ -31,7 +31,7 @@ T2 tidak bergantung pada T1 untuk penulisan, tetapi parse check-nya butuh T1.
 
 ## Di luar scope
 
-Kaggle, Fuseki, `.rq`, SHACL, reasoner, hierarki `OrgUnit`, tingkat penguasaan skill. Semua punya pemicu di `CAPABILITY-MAP.md`.
+Kaggle, Fuseki, `.rq`, SHACL, reasoner, hierarki `OrgUnit`, tingkat penguasaan skill. Semua punya pemicu di `specs/CAPABILITY-MAP.md`.
 
 ## Risiko
 

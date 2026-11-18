@@ -10,7 +10,7 @@ Status: **Disetujui** (review manusia selesai sebelum spec modul mana pun dituli
 
 Build order: ontology → data-pipeline → queries
 
-Module id bersifat stabil dan tidak diganti selama inisiatif berjalan. Spec per modul disimpan di root proyek dengan nama `SPEC-<module-id>.md`. Peta ini adalah indeks dari spec yang ada.
+Module id bersifat stabil dan tidak diganti selama inisiatif berjalan. Spec per modul disimpan di `specs/` dengan nama `SPEC-<module-id>.md`. Peta ini adalah indeks dari spec yang ada.
 
 ## Keputusan lintas modul
 

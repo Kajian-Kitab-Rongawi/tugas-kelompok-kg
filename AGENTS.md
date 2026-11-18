@@ -6,12 +6,12 @@ Enterprise HR Knowledge Graph (tugas kelompok KG). Dokumen berbahasa Indonesia; 
 
 | File | Isi |
 |---|---|
-| `CAPABILITY-MAP.md` | Peta modul (disetujui). Indeks spec. |
-| `SPEC-ontology.md` | Skema RDF. Disetujui 2026-11-18. |
+| `specs/CAPABILITY-MAP.md` | Peta modul (disetujui). Indeks spec. |
+| `specs/SPEC-ontology.md` | Skema RDF. Disetujui 2026-11-18. |
 | `tasks/plan.md` | Rencana implementasi modul `ontology`. |
 | `tasks/todo.md` | Checklist eksekusi modul `ontology`. Lokal, tidak di-commit. |
 
-`SPEC-data-pipeline.md` dan `SPEC-queries.md` belum ada. Jangan menulis kode kedua modul itu sebelum spec-nya ditulis dan disetujui.
+`specs/SPEC-data-pipeline.md` dan `specs/SPEC-queries.md` belum ada. Jangan menulis kode kedua modul itu sebelum spec-nya ditulis dan disetujui. Spec baru ditulis sebagai `specs/SPEC-<module-id>.md`.
 
 ## Build order
 
