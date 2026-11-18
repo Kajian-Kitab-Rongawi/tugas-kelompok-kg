@@ -1,0 +1,4 @@
+# Project-scoped skills: restore with `npx skills install` from skills-lock.json.
+# Text is third-party and duplicated in ~/.agents/skills; only the lock is tracked.
+# For a skill authored for this repo, track it explicitly with `git add -f`.
+.agents/skills/
