@@ -10,6 +10,7 @@ Enterprise HR Knowledge Graph (group assignment for a Knowledge Graph course). A
 | `specs/SPEC-ontology.md` | RDF schema. Approved 2026-11-18. |
 | `tasks/plan.md` | Implementation plan for the `ontology` module. |
 | `tasks/todo.md` | Execution checklist for the `ontology` module. Local, not committed. |
+| `docs/ai-usage-policy.md` | Rules for using generative AI on this repo. |
 
 `specs/SPEC-data-pipeline.md` and `specs/SPEC-queries.md` do not exist yet. Do not write code for either module before its spec is written and approved. A new spec is written as `specs/SPEC-<module-id>.md`.
 
