@@ -1,39 +1,39 @@
 # Capability Map: Enterprise HR Knowledge Graph
 
-Status: **Disetujui** (review manusia selesai sebelum spec modul mana pun ditulis).
+Status: **Approved** (human review completed before any module spec was written).
 
 | Module id | Responsibility | Depends on |
 |---|---|---|
-| `ontology` | Skema RDFS/OWL ringan dalam Turtle: Employee, OrgUnit, Company, Employment, Position, Project, Skill + relasi. CQ1-CQ5 sebagai acceptance criteria. | — |
-| `data-pipeline` | Loader CSV Kaggle (struktur organisasi), generator sintetis (Employment, Project, Skill), `docker compose` untuk Jena Fuseki, skrip load. | ontology |
-| `queries` | Query CQ1-CQ5 sebagai file `.rq` bernama, test pytest terhadap Fuseki, saved query untuk UI. | data-pipeline |
+| `ontology` | Lightweight RDFS/OWL schema in Turtle: Employee, OrgUnit, Company, Employment, Position, Project, Skill + relations. CQ1-CQ5 as acceptance criteria. | — |
+| `data-pipeline` | Kaggle CSV loader (organisational structure), synthetic generator (Employment, Project, Skill), `docker compose` for Jena Fuseki, load scripts. | ontology |
+| `queries` | CQ1-CQ5 as named `.rq` files, pytest tests against Fuseki, saved queries for the UI. | data-pipeline |
 
 Build order: ontology → data-pipeline → queries
 
-Module id bersifat stabil dan tidak diganti selama inisiatif berjalan. Spec per modul disimpan di `specs/` dengan nama `SPEC-<module-id>.md`. Peta ini adalah indeks dari spec yang ada.
+Module ids are stable and are not renamed while the initiative runs. Per-module specs live in `specs/` named `SPEC-<module-id>.md`. This map is the index of the specs that exist.
 
-## Keputusan lintas modul
+## Cross-module decisions
 
-- RDF + SPARQL 1.1, tanpa reasoner. Triple store: Apache Jena Fuseki (Docker, single node).
-- Data hybrid: dataset Kaggle untuk struktur organisasi, generator sintetis untuk Employment, Project, dan Skill. Dataset Kaggle diunduh manual dan tidak di-commit.
-- "Interactive explorer" dipenuhi oleh UI bawaan Fuseki atau YASGUI dengan saved query.
-- Dokumen berbahasa Indonesia. Identifier ontology, kode, dan query berbahasa Inggris.
-- Default ke komponen open-source tanpa lisensi.
+- RDF + SPARQL 1.1, no reasoner. Triple store: Apache Jena Fuseki (Docker, single node).
+- Hybrid data: a Kaggle dataset for organisational structure, a synthetic generator for Employment, Project, and Skill. The Kaggle dataset is downloaded manually and is not committed.
+- "Interactive explorer" is satisfied by Fuseki's built-in UI or YASGUI with saved queries.
+- All repository documents, code, comments, and identifiers are in English.
+- Default to open-source components that carry no licence requirement.
 
-## Ditunda (YAGNI) dan pemicunya
+## Deferred (YAGNI) and their triggers
 
-| Item | Pemicu untuk dibangun |
+| Item | Trigger to build it |
 |---|---|
-| `cv-extraction` | Ada kebutuhan nyata memasukkan CV tak terstruktur |
-| Explorer UI custom | Pengguna HR tidak bisa memakai saved query |
-| Modul `relationship-discovery` (shortest path generik) | Perlu path lintas banyak jenis relasi sekaligus |
-| Modul `succession-planning` terpisah | Bobot skor perlu diubah oleh non-developer |
-| Reasoner / inference | Performa property path bermasalah |
-| SHACL | Data dari sumber nyata mulai masuk |
-| Entity resolution lintas sumber | Ada lebih dari satu sumber data nyata |
-| Access control / masking atribut sensitif | Data asli (gaji, penilaian) masuk |
+| `cv-extraction` | A real need to ingest unstructured CVs |
+| Custom explorer UI | HR users cannot use the saved queries |
+| `relationship-discovery` module (generic shortest path) | Paths across many relation types are needed at once |
+| Separate `succession-planning` module | Scoring weights need to be changed by a non-developer |
+| Reasoner / inference | Property path performance becomes a problem |
+| SHACL | Real-source data starts arriving |
+| Cross-source entity resolution | There is more than one real data source |
+| Access control / sensitive-attribute masking | Real data (salary, ratings) arrives |
 
-## Pertanyaan terbuka lintas modul
+## Cross-module open questions
 
-1. Dataset Kaggle belum dipilih dan lisensinya belum dicek. Menghambat `SPEC-data-pipeline.md`.
-2. Definisi "posisi kunci" dan "pengalaman manajerial" untuk CQ5 belum final. Placeholder dipakai di `SPEC-queries.md`.
+1. The Kaggle dataset is not chosen yet and its licence is unchecked. Blocks `SPEC-data-pipeline.md`.
+2. The definitions of "key position" and "managerial experience" for CQ5 are not final. Placeholders are used in `SPEC-queries.md`.

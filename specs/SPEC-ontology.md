@@ -1,86 +1,86 @@
 # Spec: ontology
 
-Module id: `ontology` (lihat `specs/CAPABILITY-MAP.md`). Tidak bergantung pada modul lain.
+Module id: `ontology` (see `specs/CAPABILITY-MAP.md`). Depends on no other module.
 
 ## Objective
 
-Mendefinisikan skema Enterprise HR Knowledge Graph (kelas, properti, konvensi pemodelan) sebagai satu file Turtle yang menjadi kontrak bagi `data-pipeline` dan `queries`.
+Define the Enterprise HR Knowledge Graph schema (classes, properties, modelling conventions) as a single Turtle file that serves as the contract for `data-pipeline` and `queries`.
 
-**Pengguna langsung:** developer `data-pipeline` (menghasilkan RDF yang sesuai skema) dan `queries` (menulis SPARQL di atas skema). **Pengguna akhir tidak langsung:** tim HR dan manager yang mengajukan CQ1-CQ5.
+**Direct users:** developers of `data-pipeline` (producing RDF that matches the schema) and of `queries` (writing SPARQL on top of the schema). **Indirect end users:** the HR team and managers who ask CQ1-CQ5.
 
-**Prinsip desain (YAGNI):** setiap kelas dan properti harus dapat ditelusuri ke minimal satu competency question. Istilah yang tidak dibutuhkan CQ tidak masuk.
+**Design principle (YAGNI):** every class and property must trace to at least one competency question. Terms no CQ needs are left out.
 
-**Keberhasilan:** skema cukup untuk *menyatakan* data yang dibutuhkan CQ1-CQ5, dibuktikan oleh fixture contoh dan test. Menjawab CQ (query SPARQL-nya) adalah tugas modul `queries`.
+**Success:** the schema is sufficient to *state* the data CQ1-CQ5 require, proven by an example fixture and tests. Answering the CQs (writing their SPARQL) is the job of the `queries` module.
 
-### Competency questions (ringkas)
+### Competency questions (summary)
 
-| ID | Pertanyaan |
+| ID | Question |
 |---|---|
-| CQ1 | Siapa yang melapor langsung/tidak langsung kepada manager tertentu? |
-| CQ2 | Siapa yang pernah bekerja di perusahaan Y dengan akumulasi pengalaman ≥ N tahun atau pada peran tertentu? |
-| CQ3 | Bagaimana jalur relasi profesional antara employee X dan Y (jalur pelaporan, proyek yang sama, irisan riwayat kerja)? |
-| CQ4 | Siapa yang riwayat kerjanya beririsan waktu dengan employee X di perusahaan yang sama? |
-| CQ5 | Siapa kandidat internal untuk succession pada posisi kunci (pengalaman manajerial/proyek, skill, posisi dalam rantai pelaporan)? |
+| CQ1 | Who reports directly or indirectly to a given manager? |
+| CQ2 | Who has worked at company Y with cumulative experience ≥ N years, or in a given role? |
+| CQ3 | What is the professional relation path between employee X and Y (reporting path, shared projects, overlapping work history)? |
+| CQ4 | Whose work history overlaps in time with employee X at the same company? |
+| CQ5 | Who are internal candidates for succession in key positions (managerial/project experience, skills, position in the reporting chain)? |
 
-### Inventaris istilah
+### Term inventory
 
-**Kelas (7)**
+**Classes (7)**
 
-| Kelas | Keterangan | CQ |
+| Class | Description | CQ |
 |---|---|---|
-| `hr:Employee` | Karyawan | 1-5 |
-| `hr:OrgUnit` | Departemen/unit organisasi | — (lihat Open Question 3) |
-| `hr:Company` | Perusahaan. Organisasi sendiri adalah satu instance `Company` | 2-4 |
-| `hr:Employment` | Satu periode kerja seorang Employee di satu Company | 2-5 |
-| `hr:Position` | Posisi/jabatan yang dapat ditandai kunci dan mensyaratkan skill | 5 |
-| `hr:Project` | Proyek | 3, 5 |
-| `hr:Skill` | Keahlian | 5 |
+| `hr:Employee` | Employee | 1-5 |
+| `hr:OrgUnit` | Department/organisational unit | — (see Decision 3) |
+| `hr:Company` | Company. The organisation itself is one `Company` instance | 2-4 |
+| `hr:Employment` | One period of work by an Employee at one Company | 2-5 |
+| `hr:Position` | Position/title that can be marked key and requires skills | 5 |
+| `hr:Project` | Project | 3, 5 |
+| `hr:Skill` | Skill | 5 |
 
-**Object property (9)**
+**Object properties (9)**
 
-| Properti | Domain → Range | Padanan di brief | CQ |
+| Property | Domain → Range | Brief equivalent | CQ |
 |---|---|---|---|
 | `hr:reportsTo` | Employee → Employee (functional) | REPORTS_TO | 1, 3, 5 |
 | `hr:belongsTo` | Employee → OrgUnit | BELONGS_TO | — |
-| `hr:hasEmployment` | Employee → Employment | (bagian dari WORKED_AT) | 2-5 |
-| `hr:atCompany` | Employment → Company | (bagian dari WORKED_AT) | 2-4 |
+| `hr:hasEmployment` | Employee → Employment | (part of WORKED_AT) | 2-5 |
+| `hr:atCompany` | Employment → Company | (part of WORKED_AT) | 2-4 |
 | `hr:hasPosition` | Employment → Position | — | 5 |
 | `hr:collaboratedOn` | Employee → Project | COLLABORATED_ON | 3, 5 |
 | `hr:hasLead` | Project → Employee | — | 5 |
 | `hr:hasSkill` | Employee → Skill | HAS_SKILL | 5 |
 | `hr:requiresSkill` | Position → Skill | — | 5 |
 
-**Datatype property (5)**
+**Datatype properties (5)**
 
-| Properti | Domain → Range | CQ |
+| Property | Domain → Range | CQ |
 |---|---|---|
 | `hr:jobTitle` | Employment → xsd:string | 2 |
 | `hr:startDate` | Employment → xsd:date | 2, 3, 4 |
-| `hr:endDate` | Employment → xsd:date (opsional) | 2, 3, 4 |
+| `hr:endDate` | Employment → xsd:date (optional) | 2, 3, 4 |
 | `hr:isManagerial` | Employment → xsd:boolean | 5 |
 | `hr:isKeyPosition` | Position → xsd:boolean | 5 |
 
-Nama (label) semua entitas memakai `rdfs:label`.
+Every entity's name is recorded with `rdfs:label`.
 
-### Konvensi pemodelan
+### Modelling conventions
 
-1. **Riwayat kerja direifikasi.** `WORKED_AT` di brief tidak diwujudkan sebagai edge langsung. Jalurnya adalah `?emp hr:hasEmployment/hr:atCompany ?company`, sehingga jabatan dan tanggal bisa melekat pada periode kerja.
-2. **`endDate` tidak ada = masih bekerja.** Query harus menangani ketiadaan `endDate` (misalnya `COALESCE(?end, NOW())`).
-3. **Lama pengalaman diturunkan, bukan disimpan.** "Lama pengalaman" dihitung dari `startDate` dan `endDate` di query. Tidak ada triple `duration`.
-4. **Hierarki lewat property path.** `hr:reportsTo` hanya menyimpan atasan langsung (maksimal satu per Employee). Pelaporan tidak langsung memakai `hr:reportsTo+`. Tidak ada inverse yang dimaterialisasi.
-5. **Posisi saat ini** adalah `Employment` di Company organisasi sendiri tanpa `endDate`, dengan `hr:hasPosition`.
-6. **Project lead** dinyatakan dengan `hr:hasLead`, dan lead juga harus memiliki `hr:collaboratedOn` pada proyek yang sama (invarian data yang diuji di fixture).
-7. **Skema harus bisa dipakai tanpa reasoner.** `domain`/`range` hanya dokumentasi dan acuan test, bukan sumber inferensi.
+1. **Work history is reified.** The brief's `WORKED_AT` is not materialised as a direct edge. The path is `?emp hr:hasEmployment/hr:atCompany ?company`, so job title and dates can attach to the employment period.
+2. **No `endDate` means still employed.** Queries must handle a missing `endDate` (for example `COALESCE(?end, NOW())`).
+3. **Experience duration is derived, not stored.** "Years of experience" is computed from `startDate` and `endDate` in the query. There is no `duration` triple.
+4. **Hierarchy goes through a property path.** `hr:reportsTo` stores only the direct manager (at most one per Employee). Indirect reporting uses `hr:reportsTo+`. No inverse is materialised.
+5. **Current position** is the `Employment` at the organisation's own Company with no `endDate`, carrying an `hr:hasPosition`.
+6. **Project lead** is stated with `hr:hasLead`, and the lead must also have `hr:collaboratedOn` on the same project (a data invariant tested in the fixture).
+7. **The schema must work without a reasoner.** `domain`/`range` are documentation and test reference only, not a source of inference.
 
-### Di luar scope (YAGNI)
+### Out of scope (YAGNI)
 
-Hierarki `OrgUnit` (`parentUnit`), tingkat penguasaan skill, tanggal proyek, atribut gaji/kinerja, kelas `Person` terpisah dari `Employee`, SHACL, dan reasoner.
+`OrgUnit` hierarchy (`parentUnit`), skill proficiency levels, project dates, salary/performance attributes, a `Person` class separate from `Employee`, SHACL, and a reasoner.
 
 ## Tech Stack
 
-- Turtle (RDF 1.1), kosakata RDFS + OWL minimal (`owl:Class`, `owl:ObjectProperty`, `owl:DatatypeProperty`, `owl:FunctionalProperty`)
-- Python 3.11+, `rdflib>=7.0`, `pytest>=8.0` (versi dipatok di `requirements.txt` saat implementasi)
-- Namespace placeholder: `https://example.org/hr#` (prefix `hr:`)
+- Turtle (RDF 1.1), RDFS + minimal OWL vocabulary (`owl:Class`, `owl:ObjectProperty`, `owl:DatatypeProperty`, `owl:FunctionalProperty`)
+- Python 3.11+, `rdflib>=7.0`, `pytest>=8.0` (versions pinned in `requirements.txt` at implementation time)
+- Placeholder namespace: `https://example.org/hr#` (prefix `hr:`)
 
 ## Commands
 
@@ -90,33 +90,33 @@ Parse check:    python -c "import rdflib; rdflib.Graph().parse('ontology/hr.ttl'
 Test:           pytest tests/ontology -v
 ```
 
-Tidak ada langkah build, linter, atau server di modul ini.
+There are no build, lint, or server steps in this module.
 
 ## Project Structure
 
-Hanya baris bertanda ★ yang dibuat oleh modul ini.
+Only ★ lines are created by this module.
 
 ```
 specs/
-  CAPABILITY-MAP.md        → Peta kapabilitas (indeks spec)
-  SPEC-ontology.md      ★  → Dokumen ini
+  CAPABILITY-MAP.md        → Capability map (index of specs)
+  SPEC-ontology.md      ★  → This document
 requirements.txt        ★  → rdflib, pytest
 ontology/
-  hr.ttl                ★  → Skema (satu-satunya sumber kebenaran skema)
+  hr.ttl                ★  → Schema (single source of truth for the schema)
   examples/
-    sample.ttl          ★  → Fixture tulis tangan, fiktif, ±40-60 triple
+    sample.ttl          ★  → Hand-written, fictional fixture, ±40-60 triples
 docs/
-  ontology.md           ★  → Tabel cakupan CQ → istilah, konvensi pemodelan
+  ontology.md           ★  → CQ → term coverage table, modelling conventions
 tests/
-  ontology/             ★  → Test modul ini
-# Dibuat modul lain, bukan di sini:
+  ontology/             ★  → Tests for this module
+# Created by other modules, not here:
 # pipeline/, docker-compose.yml   → data-pipeline
 # queries/*.rq, tests/queries/    → queries
 ```
 
 ## Code Style
 
-Konvensi: kelas `PascalCase`, properti `camelCase` berawalan kata kerja/relasi, boolean berawalan `is`. Setiap istilah wajib punya `rdfs:label`, `rdfs:comment` (bahasa Inggris), `rdfs:domain`, dan `rdfs:range` (kecuali kelas). Padanan nama di brief ditulis di `rdfs:comment`.
+Conventions: classes `PascalCase`; properties `camelCase` prefixed with a verb/relation word; booleans prefixed `is`. Every term requires `rdfs:label`, `rdfs:comment` (English), `rdfs:domain`, and `rdfs:range` (classes excepted). The brief's name for each term is recorded in `rdfs:comment`.
 
 ```turtle
 @prefix hr:   <https://example.org/hr#> .
@@ -135,7 +135,7 @@ hr:reportsTo a owl:ObjectProperty, owl:FunctionalProperty ;
     rdfs:range  hr:Employee .
 ```
 
-Gaya test:
+Test style:
 
 ```python
 def test_every_property_has_domain_and_range(ontology):
@@ -149,59 +149,59 @@ def test_every_property_has_domain_and_range(ontology):
 
 ## Testing Strategy
 
-Framework: `pytest` + `rdflib`, tanpa Fuseki dan tanpa jaringan. Tidak ada target code coverage. Ukuran kelengkapan adalah kriteria di bawah.
+Framework: `pytest` + `rdflib`, without Fuseki and without network. No code coverage target. Completeness is measured by the criteria below.
 
-| Level | Lokasi | Yang diuji |
+| Level | Location | What is tested |
 |---|---|---|
-| Sintaks | `tests/ontology/test_ontology_valid.py` | `hr.ttl` dan `sample.ttl` bisa di-parse |
-| Kelengkapan skema | `test_ontology_valid.py` | 7 kelas dan 14 properti ada persis seperti inventaris. Semua punya label dan comment. Semua properti punya domain dan range |
-| Kesesuaian fixture | `tests/ontology/test_sample_conforms.py` | Semua predikat dan tipe di `sample.ttl` dideklarasikan di `hr.ttl`. Domain/range terpenuhi. `reportsTo` maksimal satu per Employee. Tidak ada siklus `reportsTo`. Setiap lead proyek juga `collaboratedOn` |
-| Cakupan CQ | `tests/ontology/test_cq_coverage.py` | Untuk setiap CQ1-CQ5, semua istilah yang dibutuhkan (tabel inventaris) ada di `hr.ttl`. Setiap istilah dipakai minimal satu kali di `sample.ttl` (mencegah istilah yatim) |
-| Pola struktural | `test_cq_coverage.py` | `sample.ttl` memuat satu contoh tiap pola CQ (cek dengan `ASK` sederhana, bukan query CQ lengkap) |
+| Syntax | `tests/ontology/test_ontology_valid.py` | `hr.ttl` and `sample.ttl` can be parsed |
+| Schema completeness | `test_ontology_valid.py` | The 7 classes and 14 properties exist exactly as inventoried. Every term has a label and comment. Every property has domain and range |
+| Fixture conformance | `tests/ontology/test_sample_conforms.py` | Every predicate and type in `sample.ttl` is declared in `hr.ttl`. The domain and range constraints are satisfied. At most one `reportsTo` per Employee. No `reportsTo` cycle. Every project lead is also a `collaboratedOn` participant on that project |
+| CQ coverage | `tests/ontology/test_cq_coverage.py` | For each CQ1-CQ5, every term the inventory requires exists in `hr.ttl`. Every term is used at least once in `sample.ttl` (prevents orphan terms) |
+| Structural patterns | `test_cq_coverage.py` | `sample.ttl` holds one example of every CQ pattern (checked with a simple `ASK`, not the full CQ query) |
 
-Pola yang wajib ada di `sample.ttl`:
+Patterns that must exist in `sample.ttl`:
 
-- CQ1: rantai pelaporan minimal 3 tingkat
-- CQ2: employee dengan `Employment` di perusahaan eksternal berikut tanggal dan jabatan
-- CQ3: dua employee di proyek yang sama
-- CQ4: dua employee dengan `Employment` beririsan waktu di Company yang sama, plus satu `Employment` tanpa `endDate`
-- CQ5: satu `Position` kunci dengan `requiresSkill`, satu kandidat dengan `hasSkill` dan `Employment` `isManagerial`, serta satu proyek dengan `hasLead`
+- CQ1: a reporting chain of at least 3 levels
+- CQ2: an employee with an `Employment` at an external company, including dates and job title
+- CQ3: two employees on the same project
+- CQ4: two employees with time-overlapping `Employment` at the same Company, plus one `Employment` without `endDate`
+- CQ5: one key `Position` with `requiresSkill`, one candidate with `hasSkill` and a managerial `Employment`, and one project with `hasLead`
 
 ## Boundaries
 
 - **Always:**
-  - Telusuri setiap istilah baru ke minimal satu CQ dan perbarui tabel cakupan di `docs/ontology.md`
-  - Jalankan `pytest tests/ontology` sebelum commit
-  - Beri `rdfs:label`, `rdfs:comment`, domain, dan range pada setiap istilah
-  - Gunakan identifier berbahasa Inggris
+  - Trace every new term to at least one CQ and update the coverage table in `docs/ontology.md`
+  - Run `pytest tests/ontology` before committing
+  - Give every term an `rdfs:label`, `rdfs:comment`, domain, and range
+  - Use English identifiers
 - **Ask first:**
-  - Menambah kelas atau properti yang tidak terkait CQ1-CQ5
-  - Mengubah IRI namespace `hr:`
-  - Mengubah konvensi pemodelan (reifikasi `Employment`, `endDate` opsional, lama pengalaman diturunkan)
-  - Menambah dependensi (misalnya `pyshacl`, `owlrl`)
+  - Adding a class or property unrelated to CQ1-CQ5
+  - Changing the `hr:` namespace IRI
+  - Changing a modelling convention (reified `Employment`, optional `endDate`, derived experience)
+  - Adding a dependency (for example `pyshacl`, `owlrl`)
 - **Never:**
-  - Commit data HR asli, PII, atau data Kaggle ke `ontology/examples/`
-  - Menyimpan nilai turunan (durasi, atasan tidak langsung) sebagai triple
-  - Mengubah nama atau menghapus istilah yang sudah dipakai modul lain tanpa memperbarui modul tersebut
-  - Menghapus test yang gagal tanpa persetujuan
+  - Commit real HR data, PII, or the Kaggle dataset to `ontology/examples/`
+  - Store derived values (duration, indirect managers) as triples
+  - Rename or remove a term already used by another module without updating that module
+  - Delete a failing test without approval
 
 ## Success Criteria
 
-1. `ontology/hr.ttl` ter-parse tanpa error oleh rdflib.
-2. `hr.ttl` mendefinisikan tepat 7 kelas dan 14 properti sesuai inventaris, masing-masing dengan label dan comment. Setiap properti memiliki domain dan range.
-3. `ontology/examples/sample.ttl` ter-parse, hanya memakai istilah yang dideklarasikan, dan memenuhi domain, range, serta invarian (functional `reportsTo`, tanpa siklus, lead juga collaborator).
-4. Untuk setiap CQ1-CQ5, seluruh istilah yang dibutuhkan ada di `hr.ttl` dan seluruh pola struktural ada di `sample.ttl`.
-5. Setiap istilah di `hr.ttl` dipakai minimal sekali di `sample.ttl`.
-6. `pytest tests/ontology -v` lulus seluruhnya tanpa Fuseki, tanpa jaringan, dan tanpa reasoner.
-7. `docs/ontology.md` memuat tabel CQ → istilah dan konvensi pemodelan yang konsisten dengan `hr.ttl`.
+1. `ontology/hr.ttl` parses without error under rdflib.
+2. `hr.ttl` defines exactly 7 classes and 14 properties as inventoried, each with a label and comment. Every property has domain and range.
+3. `ontology/examples/sample.ttl` parses, uses only declared terms, and satisfies the domain and range constraints and the invariants (functional `reportsTo`, no cycles, leads are also collaborators).
+4. For each CQ1-CQ5, every required term exists in `hr.ttl` and every structural pattern exists in `sample.ttl`.
+5. Every term in `hr.ttl` is used at least once in `sample.ttl`.
+6. `pytest tests/ontology -v` passes entirely without Fuseki, without network, and without a reasoner.
+7. `docs/ontology.md` holds the CQ → term table and modelling conventions consistent with `hr.ttl`.
 
-## Keputusan (disetujui 2026-11-18)
+## Decisions (approved 2026-11-18)
 
-| # | Pertanyaan | Keputusan |
+| # | Question | Decision |
 |---|---|---|
-| 1 | Namespace | Placeholder `https://example.org/hr#` dipertahankan. Bila organisasi menetapkan namespace, ganti sekali dengan search-replace. |
-| 2 | Kelas `Position` | Disetujui, berstatus sementara karena bergantung pada definisi CQ5. |
-| 3 | `OrgUnit` / `belongsTo` | Dipertahankan walau tidak dipakai CQ mana pun: peta sudah disetujui dan dataset sumber hampir pasti memuat departemen. Kolom CQ-nya tetap "—". |
-| 4 | `WORKED_AT` | Jalur `hr:hasEmployment/hr:atCompany` saja, tanpa edge pintasan. |
-| 5 | Lama pengalaman | Diturunkan di query. Tidak ada triple durasi. |
-| 6 | Definisi CQ5 | Tidak menghambat modul ini. Finalisasi ditunda ke `SPEC-queries.md`, dampaknya hanya pada `Position`, `isManagerial`, dan `hasLead`. |
+| 1 | Namespace | The placeholder `https://example.org/hr#` is kept. If the organisation assigns a namespace, replace it once with a search-replace. |
+| 2 | `Position` class | Approved, but provisional because it depends on the CQ5 definition. |
+| 3 | `OrgUnit` / `belongsTo` | Kept although no CQ uses them: the map is approved and the source dataset almost certainly carries departments. Their CQ column stays "—". |
+| 4 | `WORKED_AT` | Path `hr:hasEmployment/hr:atCompany` only, no shortcut edge. |
+| 5 | Experience duration | Derived in the query. No duration triple. |
+| 6 | CQ5 definition | Does not block this module. Finalisation is deferred to `SPEC-queries.md`; it only affects `Position`, `isManagerial`, and `hasLead`. |
