@@ -2,3 +2,11 @@
 # Text is third-party and duplicated in ~/.agents/skills; only the lock is tracked.
 # For a skill authored for this repo, track it explicitly with `git add -f`.
 .agents/skills/
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Local task status; tasks/plan.md is tracked.
+/tasks/todo.md
